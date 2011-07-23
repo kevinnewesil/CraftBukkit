@@ -146,9 +146,9 @@ public class WorldMap extends WorldMapBase {
         for (int i = 0; i < this.h.size(); ++i) {
             WorldMapHumanTracker worldmaphumantracker1 = (WorldMapHumanTracker) this.h.get(i);
 
-            if (!worldmaphumantracker1.trackee.dead && worldmaphumantracker1.trackee.inventory.c(itemstack)) {
-                float f = (float) (worldmaphumantracker1.trackee.locX - (double) this.b) / (float) (1 << this.e);
-                float f1 = (float) (worldmaphumantracker1.trackee.locZ - (double) this.c) / (float) (1 << this.e);
+            if (!worldmaphumantracker1.a.dead && worldmaphumantracker1.a.inventory.c(itemstack)) {
+                float f = (float) (worldmaphumantracker1.a.locX - (double) this.b) / (float) (1 << this.e);
+                float f1 = (float) (worldmaphumantracker1.a.locZ - (double) this.c) / (float) (1 << this.e);
                 byte b0 = 64;
                 byte b1 = 64;
 
@@ -157,7 +157,7 @@ public class WorldMap extends WorldMapBase {
                     byte b3 = (byte) ((int) ((double) (f * 2.0F) + 0.5D));
                     byte b4 = (byte) ((int) ((double) (f1 * 2.0F) + 0.5D));
                     // CraftBukkit
-                    byte b5 = (byte) ((int) ((double) (worldmaphumantracker1.trackee.yaw * 16.0F / 360.0F) + 0.5D));
+                    byte b5 = (byte) ((int) ((double) (worldmaphumantracker1.a.yaw * 16.0F / 360.0F) + 0.5D));
 
                     if (this.map < 0) {
                         int j = this.g / 10;
@@ -165,7 +165,7 @@ public class WorldMap extends WorldMapBase {
                         b5 = (byte) (j * j * 34187121 + j * 121 >> 15 & 15);
                     }
 
-                    if (worldmaphumantracker1.trackee.dimension == this.map) {
+                    if (worldmaphumantracker1.a.dimension == this.map) {
                         this.i.add(new WorldMapOrienter(this, b2, b3, b4, b5));
                     }
                 }
@@ -176,7 +176,7 @@ public class WorldMap extends WorldMapBase {
 				if (map.isContextual()) {
 					map.removeUser((CraftPlayer)((EntityPlayer)entityhuman).getBukkitEntity());
 				} // Craftbukkit end
-                this.j.remove(worldmaphumantracker1.trackee);
+                this.j.remove(worldmaphumantracker1.a);
                 this.h.remove(worldmaphumantracker1);
             }
         }
