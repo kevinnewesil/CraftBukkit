@@ -1,14 +1,9 @@
 package org.bukkit.craftbukkit.maps;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.server.EntityHuman;
 import net.minecraft.server.WorldMap;
-
 import org.bukkit.entity.Player;
-import org.bukkit.maps.BaseRegisteredException;
 import org.bukkit.maps.ContextualMapRenderer;
 import org.bukkit.maps.MapCanvas;
 import org.bukkit.maps.MapDrawer;
@@ -21,8 +16,6 @@ import org.bukkit.maps.MapView;
 import org.bukkit.maps.MapViewManager;
 import org.bukkit.maps.RenderPriority;
 import org.bukkit.plugin.Plugin;
-
-import com.sun.org.apache.bcel.internal.generic.ISUB;
 
 public class CraftMapView implements MapView {
 	private boolean _isVirtual;
