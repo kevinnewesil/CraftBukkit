@@ -57,6 +57,7 @@ import org.bukkit.craftbukkit.inventory.CraftFurnaceRecipe;
 import org.bukkit.craftbukkit.inventory.CraftRecipe;
 import org.bukkit.craftbukkit.inventory.CraftShapedRecipe;
 import org.bukkit.craftbukkit.inventory.CraftShapelessRecipe;
+import org.bukkit.craftbukkit.maps.CraftMapManager;
 import org.bukkit.craftbukkit.command.ServerCommandListener;
 import org.bukkit.scheduler.BukkitWorker;
 import org.bukkit.craftbukkit.scheduler.CraftScheduler;
@@ -82,7 +83,7 @@ public final class CraftServer implements Server {
     private final Map<String, World> worlds = new LinkedHashMap<String, World>();
     private final Configuration configuration;
     private final Yaml yaml = new Yaml(new SafeConstructor());
-
+    private final CraftMapManager mapManager;
     public CraftServer(MinecraftServer console, ServerConfigurationManager server) {
         this.console = console;
         this.server = server;
@@ -96,6 +97,7 @@ public final class CraftServer implements Server {
         loadConfig();
         loadPlugins();
         enablePlugins(PluginLoadOrder.STARTUP);
+		mapManager = CraftMapManager.createMapManager(this);
     }
 
     private void loadConfig() {

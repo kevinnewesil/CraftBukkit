@@ -11,6 +11,10 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.maps.CraftMapManager;
+import org.bukkit.entity.Player;
+import org.bukkit.maps.MapView;
 // CraftBukkit end
 
 public class WorldMap extends WorldMapBase {
@@ -126,7 +130,13 @@ public class WorldMap extends WorldMapBase {
     public void a(EntityHuman entityhuman, ItemStack itemstack) {
         if (!this.j.containsKey(entityhuman)) {
             WorldMapHumanTracker worldmaphumantracker = new WorldMapHumanTracker(this, entityhuman);
-
+			// Craftbukkit start
+			CraftMapManager manager = CraftMapManager.getSingleton();
+			MapView map = manager.getMapView(this.a);
+			if (map != null && map.isContextual()) {
+				map.addUser((CraftPlayer)((EntityPlayer)entityhuman).getBukkitEntity());
+			}
+			// Craftbukkit end
             this.j.put(entityhuman, worldmaphumantracker);
             this.h.add(worldmaphumantracker);
         }
@@ -160,6 +170,12 @@ public class WorldMap extends WorldMapBase {
                     }
                 }
             } else {
+				// Craftbukkit start
+				CraftMapManager manager = CraftMapManager.getSingleton();
+				MapView map = manager.getMapView(this.a);
+				if (map.isContextual()) {
+					map.removeUser((CraftPlayer)((EntityPlayer)entityhuman).getBukkitEntity());
+				} // Craftbukkit end
                 this.j.remove(worldmaphumantracker1.trackee);
                 this.h.remove(worldmaphumantracker1);
             }
@@ -193,4 +209,26 @@ public class WorldMap extends WorldMapBase {
             }
         }
     }
+	// CraftBukkit start  Player specific "a"
+	public void a(int i, int j, int k, Player player) {
+		super.a();
+
+		for (int l = 0; l < this.h.size(); ++l) {
+			WorldMapHumanTracker worldmaphumantracker = (WorldMapHumanTracker) this.h
+					.get(l);
+			if (worldmaphumantracker.a.id == (player.getEntityId())) {
+				if (worldmaphumantracker.b[i] < 0
+						|| worldmaphumantracker.b[i] > j) {
+					worldmaphumantracker.b[i] = j;
+				}
+
+				if (worldmaphumantracker.c[i] < 0
+						|| worldmaphumantracker.c[i] < k) {
+					worldmaphumantracker.c[i] = k;
+				}
+				return;
+			}
+		}
+	}
+	// CraftBukkit start
 }
