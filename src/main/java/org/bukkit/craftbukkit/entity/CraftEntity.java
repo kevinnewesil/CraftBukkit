@@ -8,6 +8,7 @@ import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
@@ -296,5 +297,26 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
             throw new IllegalArgumentException("Age must be at least 1 tick");
         }
         getHandle().ticksLived = value;
+    }
+
+    public boolean isInsideVehicle() {
+        return getHandle().vehicle != null;
+    }
+
+    public boolean leaveVehicle() {
+        if (getHandle().vehicle == null) {
+            return false;
+        }
+
+        getHandle().setPassengerOf(null);
+        return true;
+    }
+
+    public org.bukkit.entity.Entity getVehicle() {
+        if (getHandle().vehicle == null) {
+            return null;
+        }
+
+        return getHandle().vehicle.getBukkitEntity();
     }
 }
