@@ -918,6 +918,9 @@ public class World implements IBlockAccess {
         for (int i = 0; i < this.z.size(); ++i) {
             ((IWorldAccess) this.z.get(i)).b(entity);
         }
+        // CraftBukkit start
+        entity.valid = false;
+        // CraftBukkit end
     }
 
     public void kill(Entity entity) {

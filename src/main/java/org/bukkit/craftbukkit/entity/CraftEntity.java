@@ -201,6 +201,10 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         return !entity.aj();
     }
 
+    public boolean isValid() {
+        return entity.aj() && entity.valid;
+    }
+
     public Entity getHandle() {
         return entity;
     }
