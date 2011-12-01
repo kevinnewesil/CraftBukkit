@@ -50,7 +50,7 @@ public abstract class Packet {
         }
     }
 
-    public final int b() {
+    public int b() { // CraftBukkit - removed final
         return ((Integer) a.get(this.getClass())).intValue();
     }
 

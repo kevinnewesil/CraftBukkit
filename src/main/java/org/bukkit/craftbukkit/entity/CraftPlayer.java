@@ -1,11 +1,16 @@
 package org.bukkit.craftbukkit.entity;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.NetHandler;
+import net.minecraft.server.Packet;
 import net.minecraft.server.Packet131ItemData;
 import net.minecraft.server.Packet200Statistic;
 import net.minecraft.server.Packet201PlayerInfo;
@@ -564,5 +569,48 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
         int hash = 5;
         hash = 97 * hash + (this.getName() != null ? this.getName().hashCode() : 0);
         return hash;
+    }
+
+    public class CustomPacket extends Packet {
+        public byte packetId;
+        public byte[] data;
+
+        public CustomPacket() { }
+
+        public CustomPacket(int packetId, byte[] data, boolean lowPriority) {
+            this.packetId = (byte) packetId;
+            this.data = data;
+            this.l = lowPriority;
+        }
+
+        @Override
+        public void a(DataInputStream datainputstream) throws IOException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void a(DataOutputStream dataoutputstream) throws IOException {
+            dataoutputstream.write(data);
+        }
+
+        @Override
+        public void a(NetHandler nethandler) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int a() {
+            return data.length;
+        }
+
+        @Override
+        public int b() {
+            return packetId;
+        }
+    }
+
+    @Override
+    public void sendRawPacket(int packetId, byte[] data, boolean lowPriority) {
+        getHandle().netServerHandler.sendPacket(new CustomPacket(packetId, data, lowPriority));
     }
 }
