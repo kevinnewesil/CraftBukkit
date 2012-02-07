@@ -96,7 +96,7 @@ public class ServerConfigurationManager {
     public int a() {
         // CraftBukkit start
         if (this.server.worlds.size() == 0) {
-            return this.server.propertyManager.getInt("view-distance", 10) * 16 - 16;
+            return Math.max(this.server.propertyManager.getInt("view-distance", 10) * 16 - 16, 16);//CraftBukkitPlusPlus
         }
         return this.server.worlds.get(0).manager.getFurthestViewableBlock();
         // CraftBukkit end

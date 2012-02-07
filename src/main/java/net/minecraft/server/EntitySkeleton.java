@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import org.bukkit.craftbukkit.TrigMath;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
@@ -96,7 +97,7 @@ public class EntitySkeleton extends EntityMonster {
                 // CraftBukkit end
             }
 
-            this.yaw = (float) (Math.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - 90.0F;
+            this.yaw = (float) (TrigMath.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - 90.0F; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
             this.e = true;
         }
     }

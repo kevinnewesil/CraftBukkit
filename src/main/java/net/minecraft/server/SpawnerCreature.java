@@ -8,6 +8,8 @@ import java.util.Random;
 
 // CraftBukkit start
 import java.util.ArrayList;
+
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.util.LongBaseHashtable;
 import org.bukkit.craftbukkit.util.EntryBase;
 import org.bukkit.craftbukkit.util.LongHash;
@@ -55,6 +57,14 @@ public final class SpawnerCreature {
             // b.clear();
             LongBaseHashtable chunkCoords = new LongBaseHashtable();
             // CraftBukkit end
+            
+            //CraftBukkitPlusPlus start
+            int range = ((org.bukkit.craftbukkit.CraftServer)Bukkit.getServer()).getMobSpawnRange();
+            if (range <= 0 || world.players.size() == 0) {
+            	return 0;
+            }
+            int rangeSquared = (range + range) * (range + range);
+            //CraftBukkitPlusPlus end
 
             int i;
             int j;
@@ -64,7 +74,8 @@ public final class SpawnerCreature {
                 int k = MathHelper.floor(entityhuman.locX / 16.0D);
 
                 j = MathHelper.floor(entityhuman.locZ / 16.0D);
-                byte b0 = 8;
+                byte b0 = (byte) range; //CraftBukkitPlusPlus
+                
 
                 for (int l = -b0; l <= b0; ++l) {
                     for (int i1 = -b0; i1 <= b0; ++i1) {
@@ -91,8 +102,17 @@ public final class SpawnerCreature {
 
             for (int j1 = 0; j1 < j; ++j1) {
                 EnumCreatureType enumcreaturetype = aenumcreaturetype[j1];
+                //CraftBukkitPlusPlus start
+                int amt;
+                switch(enumcreaturetype) {
+                    case MONSTER: amt = ((org.bukkit.craftbukkit.CraftServer)Bukkit.getServer()).getMonstersPerChunk(); break;
+                    case CREATURE: amt = ((org.bukkit.craftbukkit.CraftServer)Bukkit.getServer()).getLandCreaturesPerChunk(); break;
+                    case WATER_CREATURE: amt = ((org.bukkit.craftbukkit.CraftServer)Bukkit.getServer()).getWaterCreaturesPerChunk(); break;
+                    default: amt = enumcreaturetype.b();
+                }
+                //CraftBukkitPlusPlus end
 
-                if ((!enumcreaturetype.d() || flag1) && (enumcreaturetype.d() || flag) && world.a(enumcreaturetype.a()) <= enumcreaturetype.b() * b.size() / 256) {
+                if ((!enumcreaturetype.d() || flag1) && (enumcreaturetype.d() || flag) && world.a(enumcreaturetype.a()) <= b.size() * amt / rangeSquared) { //CraftBukkitPlusPlus 256 -> range squared, b.size() -> amt
 
                     // CraftBukkit start
                     label108:

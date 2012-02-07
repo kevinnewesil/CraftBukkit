@@ -144,6 +144,7 @@ public class ContainerEnchantTable extends Container {
 
                 // CraftBukkit start
                 Map<org.bukkit.enchantments.Enchantment, Integer> enchants = new HashMap<org.bukkit.enchantments.Enchantment, Integer>();
+                if (list != null)  //CraftBukkitPlusPlus
                 for (Object o : list) {
                     EnchantmentInstance e = (EnchantmentInstance) o;
                     enchants.put(org.bukkit.enchantments.Enchantment.getById(e.a.id), e.b);
@@ -153,7 +154,7 @@ public class ContainerEnchantTable extends Container {
                 h.getServer().getPluginManager().callEvent(event);
 
                 int level = event.getExpLevelCost();
-                if (event.isCancelled() || (level > entityhuman.expLevel)) {
+                if (event.isCancelled()/* || (level > entityhuman.expLevel)*/) { //CraftBukkitPlusPlus
                     return false;
                 }
                 if (enchants.isEmpty() == false) {

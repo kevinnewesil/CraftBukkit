@@ -1,6 +1,9 @@
 package net.minecraft.server;
 
-import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
+// CraftBukkit start
+import org.bukkit.craftbukkit.TrigMath;
+import org.bukkit.craftbukkit.event.CraftEventFactory;
+// CraftBukkit end
 
 public class EntitySquid extends EntityWaterAnimal {
 
@@ -118,10 +121,10 @@ public class EntitySquid extends EntityWaterAnimal {
             }
 
             f = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
-            this.V += (-((float) Math.atan2(this.motX, this.motZ)) * 180.0F / 3.1415927F - this.V) * 0.1F;
+            this.V += (-((float) TrigMath.atan2(this.motX, this.motZ)) * 180.0F / 3.1415927F - this.V) * 0.1F; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
             this.yaw = this.V;
             this.c += 3.1415927F * this.n * 1.5F;
-            this.a += (-((float) Math.atan2((double) f, this.motY)) * 180.0F / 3.1415927F - this.a) * 0.1F;
+            this.a += (-((float) TrigMath.atan2((double) f, this.motY)) * 180.0F / 3.1415927F - this.a) * 0.1F; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
         } else {
             this.j = MathHelper.abs(MathHelper.sin(this.h)) * 3.1415927F * 0.25F;
             if (!this.world.isStatic) {

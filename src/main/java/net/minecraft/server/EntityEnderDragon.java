@@ -6,6 +6,7 @@ import java.util.List;
 // CraftBukkit start
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.TrigMath;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -205,7 +206,7 @@ public class EntityEnderDragon extends EntityComplex {
                     this.yaw -= 360.0F;
                 }
 
-                double d8 = 180.0D - Math.atan2(d0, d2) * 180.0D / 3.1415927410125732D;
+                double d8 = 180.0D - TrigMath.atan2(d0, d2) * 180.0D / 3.1415927410125732D; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
 
                 double d9;
 

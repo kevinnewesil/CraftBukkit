@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason; // CraftBukkit
 
 public class TileEntityMobSpawner extends TileEntity {
@@ -23,6 +24,12 @@ public class TileEntityMobSpawner extends TileEntity {
 
     public void l_() {
         this.c = this.b;
+        //CraftBukkitPlusPlus start
+        int range = ((org.bukkit.craftbukkit.CraftServer)Bukkit.getServer()).getMobSpawnRange();
+        if (range <= 0) {
+        	return;
+        }
+        //CraftBukkitPlusPlus end
         if (this.c()) {
             double d0 = (double) ((float) this.x + this.world.random.nextFloat());
             double d1 = (double) ((float) this.y + this.world.random.nextFloat());

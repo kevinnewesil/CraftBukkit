@@ -70,6 +70,9 @@ import org.bukkit.plugin.SimpleServicesManager;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.craftbukkit.command.AlterGrowthCommand;
+import org.bukkit.craftbukkit.command.ItemMergeRadiusCommand;
+import org.bukkit.craftbukkit.command.SpawnMobRadiusCommand;
 import org.bukkit.craftbukkit.inventory.CraftFurnaceRecipe;
 import org.bukkit.craftbukkit.inventory.CraftRecipe;
 import org.bukkit.craftbukkit.inventory.CraftShapedRecipe;
@@ -106,11 +109,21 @@ public final class CraftServer implements Server {
     private YamlConfiguration configuration;
     private final Yaml yaml = new Yaml(new SafeConstructor());
     private final Map<String, OfflinePlayer> offlinePlayers = new MapMaker().softValues().makeMap();
+    //CraftBukkitPlusPlus Start
+    private int growthPerTick = 650;
+    private double itemMergeRadius = 3;
+    private boolean randomLightingUpdates = false;
+    private int mobSpawnRange = 4;
+    private int aggregateTicks = 4;
+    private int monstersPerChunk = 70;
+    private int landCreaturesPerChunk = 15;
+    private int waterCreaturesPerChunk = 5;
+    //CraftBukkitPlusPlus End
 
     static {
         ConfigurationSerialization.registerClass(CraftOfflinePlayer.class);
     }
-
+    
     public CraftServer(MinecraftServer console, ServerConfigurationManager server) {
         this.console = console;
         this.server = server;
@@ -136,7 +149,32 @@ public final class CraftServer implements Server {
         configuration.setDefaults(YamlConfiguration.loadConfiguration(getClass().getClassLoader().getResourceAsStream("configurations/bukkit.yml")));
         saveConfig();
         ((SimplePluginManager) pluginManager).useTimings(configuration.getBoolean("settings.plugin-profiling", false));
-
+        //CraftBukkitPlusPlus start
+        growthPerTick = configuration.getInt("settings.growth-chunks-per-tick", 650);
+        itemMergeRadius = configuration.getDouble("settings.item-merge-radius", 3.5);
+        randomLightingUpdates = configuration.getBoolean("settings.item-merge-radius", false);
+        mobSpawnRange = configuration.getInt("settings.mob-spawn-range", 4);
+        aggregateTicks = Math.max(1, configuration.getInt("settings.aggregate-chunkticks", 4));
+        monstersPerChunk = configuration.getInt("settings.monsters-per-chunk", 70);
+        landCreaturesPerChunk = configuration.getInt("settings.land-creatures-per-chunk", 15);
+        waterCreaturesPerChunk = configuration.getInt("settings.water-creatures-per-chunk", 5);
+        
+        getLogger().info("--------------CraftBukkitPlusPlus----------------");
+        getLogger().info("Growth Per Chunk: " + growthPerTick);
+        getLogger().info("Item Merge Radius: " + itemMergeRadius);
+        getLogger().info("Random Lighting Updates: " + randomLightingUpdates);
+        getLogger().info("Mob Spawn Range: " + mobSpawnRange);
+        getLogger().info("Aggregate Ticks: " + aggregateTicks);
+        getLogger().info("Monsters Per Chunk: " + monstersPerChunk);
+        getLogger().info("Land Creatures Per Chunk: " + landCreaturesPerChunk);
+        getLogger().info("Water Creatures Per Chunk: " + waterCreaturesPerChunk);
+        getLogger().info("-------------------------------------------------");
+        
+        commandMap.register("bukkit", new AlterGrowthCommand("growth"));
+        commandMap.register("bukkit", new ItemMergeRadiusCommand("merge"));
+        commandMap.register("bukkit", new SpawnMobRadiusCommand("mobspawn"));
+        
+        //CraftBukkitPlusPlus end
         loadPlugins();
         enablePlugins(PluginLoadOrder.STARTUP);
 
@@ -337,6 +375,75 @@ public final class CraftServer implements Server {
     public boolean hasWhitelist() {
         return this.getConfigBoolean("white-list", false);
     }
+
+    //CraftBukkitPlusPlus
+    public int getOptimalGrowthChunks() {
+        return this.growthPerTick;
+    }
+
+    public void setOptimalGrowthChunks(int chunks) {
+        growthPerTick = chunks;
+        for (World w : this.getWorlds()) {
+            ((CraftWorld)w).getHandle().optimalChunks = chunks;
+        }
+    }
+
+    public int getMobSpawnRange() {
+        return this.mobSpawnRange;
+    }
+
+    public void setMobSpawnRange(int range) {
+        mobSpawnRange = range;
+    }
+
+    public double getItemMergeRadius() {
+        return this.itemMergeRadius;
+    }
+
+    public void setItemMergeRadius(double value) {
+        itemMergeRadius = value;
+    }
+
+    public boolean isRandomLightingUpdates() {
+        return this.randomLightingUpdates;
+    }
+
+    public void setRandomLightingUpdates(boolean value) {
+        randomLightingUpdates = value;
+    }
+
+    public int getAggregateChunkTicks() {
+        return this.aggregateTicks;
+    }
+
+    public void setAggregateChunkTicks(int ticks) {
+        aggregateTicks = Math.max(1, ticks);
+    }
+
+    public int getMonstersPerChunk() {
+        return this.monstersPerChunk;
+    }
+
+    public void setMonstersPerChunk(int monsters) {
+    	monstersPerChunk = monsters;
+    }
+
+    public int getLandCreaturesPerChunk() {
+        return this.landCreaturesPerChunk;
+    }
+
+    public void setLandCreaturesPerChunk(int creatures) {
+    	landCreaturesPerChunk = creatures;
+    }
+
+    public int getWaterCreaturesPerChunk() {
+        return this.waterCreaturesPerChunk;
+    }
+
+    public void setWaterCreaturesPerChunk(int creatures) {
+    	waterCreaturesPerChunk = creatures;
+    }
+    //CraftBukkitPlusPlus
 
     // NOTE: Temporary calls through to server.properies until its replaced
     private String getConfigString(String variable, String defaultValue) {

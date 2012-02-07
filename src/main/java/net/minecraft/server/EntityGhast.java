@@ -2,6 +2,8 @@ package net.minecraft.server;
 
 // CraftBukkit start
 import java.util.List;
+
+import org.bukkit.craftbukkit.TrigMath;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -127,7 +129,7 @@ public class EntityGhast extends EntityFlying implements IMonster {
             double d6 = this.target.boundingBox.b + (double) (this.target.length / 2.0F) - (this.locY + (double) (this.length / 2.0F));
             double d7 = this.target.locZ - this.locZ;
 
-            this.V = this.yaw = -((float) Math.atan2(d5, d7)) * 180.0F / 3.1415927F;
+            this.V = this.yaw = -((float) TrigMath.atan2(d5, d7)) * 180.0F / 3.1415927F; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
             if (this.g(this.target)) {
                 if (this.f == 10) {
                     this.world.a((EntityHuman) null, 1007, (int) this.locX, (int) this.locY, (int) this.locZ, 0);
@@ -150,7 +152,7 @@ public class EntityGhast extends EntityFlying implements IMonster {
                 --this.f;
             }
         } else {
-            this.V = this.yaw = -((float) Math.atan2(this.motX, this.motZ)) * 180.0F / 3.1415927F;
+            this.V = this.yaw = -((float) TrigMath.atan2(this.motX, this.motZ)) * 180.0F / 3.1415927F; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
             if (this.f > 0) {
                 --this.f;
             }

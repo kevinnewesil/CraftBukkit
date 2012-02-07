@@ -21,6 +21,15 @@ settings:
     update-folder: update
     ping-packet-limit: 100
     use-exact-login-location: false
+    growth-chunks-per-tick: 650
+    mob-spawn-range: 4
+    monsters-per-chunk: 70
+    land-creatures-per-chunk: 15
+    water-creatures-per-chunk: 5
+    item-merge-radius: 3.5
+    random-light-updates: false
+    aggregate-chunkticks: 4
+    multithreaded-entity-targeting: true
 ticks-per:
     animal-spawns: 400
     monster-spawns: 1

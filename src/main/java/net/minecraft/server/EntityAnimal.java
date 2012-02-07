@@ -2,6 +2,10 @@ package net.minecraft.server;
 
 import java.util.List;
 
+// CraftBukkit start
+import org.bukkit.craftbukkit.TrigMath;
+// CraftBukkit end
+
 public abstract class EntityAnimal extends EntityCreature implements IAnimal {
 
     private int love;
@@ -61,7 +65,7 @@ public abstract class EntityAnimal extends EntityCreature implements IAnimal {
                 double d0 = entity.locX - this.locX;
                 double d1 = entity.locZ - this.locZ;
 
-                this.yaw = (float) (Math.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - 90.0F;
+                this.yaw = (float) (TrigMath.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - 90.0F; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
                 this.e = true;
             }
 

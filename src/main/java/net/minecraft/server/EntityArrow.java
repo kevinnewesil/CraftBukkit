@@ -4,6 +4,7 @@ import java.util.List;
 
 // CraftBukkit start
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.TrigMath;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -77,8 +78,8 @@ public class EntityArrow extends Entity {
         this.motZ = d2;
         float f3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
 
-        this.lastYaw = this.yaw = (float) (Math.atan2(d0, d2) * 180.0D / 3.1415927410125732D);
-        this.lastPitch = this.pitch = (float) (Math.atan2(d1, (double) f3) * 180.0D / 3.1415927410125732D);
+        this.lastYaw = this.yaw = (float) (TrigMath.atan2(d0, d2) * 180.0D / 3.1415927410125732D); // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
+        this.lastPitch = this.pitch = (float) (TrigMath.atan2(d1, (double) f3) * 180.0D / 3.1415927410125732D); // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
         this.k = 0;
     }
 
@@ -87,8 +88,8 @@ public class EntityArrow extends Entity {
         if (this.lastPitch == 0.0F && this.lastYaw == 0.0F) {
             float f = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
-            this.lastYaw = this.yaw = (float) (Math.atan2(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
-            this.lastPitch = this.pitch = (float) (Math.atan2(this.motY, (double) f) * 180.0D / 3.1415927410125732D);
+            this.lastYaw = this.yaw = (float) (TrigMath.atan2(this.motX, this.motZ) * 180.0D / 3.1415927410125732D); // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
+            this.lastPitch = this.pitch = (float) (TrigMath.atan2(this.motY, (double) f) * 180.0D / 3.1415927410125732D); // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
         }
 
         int i = this.world.getTypeId(this.e, this.f, this.g);
@@ -271,9 +272,9 @@ public class EntityArrow extends Entity {
             this.locY += this.motY;
             this.locZ += this.motZ;
             f2 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
-            this.yaw = (float) (Math.atan2(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
+            this.yaw = (float) (TrigMath.atan2(this.motX, this.motZ) * 180.0D / 3.1415927410125732D); // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
 
-            for (this.pitch = (float) (Math.atan2(this.motY, (double) f2) * 180.0D / 3.1415927410125732D); this.pitch - this.lastPitch < -180.0F; this.lastPitch -= 360.0F) {
+            for (this.pitch = (float) (TrigMath.atan2(this.motY, (double) f2) * 180.0D / 3.1415927410125732D); this.pitch - this.lastPitch < -180.0F; this.lastPitch -= 360.0F) { // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
                 ;
             }
 

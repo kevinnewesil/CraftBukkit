@@ -351,8 +351,7 @@ public abstract class EntityLiving extends Entity {
         if (f > 0.05F) {
             f3 = 1.0F;
             f2 = f * 3.0F;
-            // CraftBukkit - Math -> TrigMath
-            f1 = (float) TrigMath.atan2(d1, d0) * 180.0F / 3.1415927F - 90.0F;
+            f1 = (float) TrigMath.atan2(d1, d0) * 180.0F / 3.1415927F - 90.0F; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
         }
 
         if (this.ao > 0.0F) {
@@ -531,7 +530,7 @@ public abstract class EntityLiving extends Entity {
                             d0 = (Math.random() - Math.random()) * 0.01D;
                         }
 
-                        this.au = (float) (Math.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - this.yaw;
+                        this.au = (float) (TrigMath.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - this.yaw; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
                         this.a(entity, i, d0, d1);
                     } else {
                         this.au = (float) ((int) (Math.random() * 2.0D) * 180);
@@ -1120,8 +1119,8 @@ public abstract class EntityLiving extends Entity {
         }
 
         double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1);
-        float f2 = (float) (Math.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - 90.0F;
-        float f3 = (float) (-(Math.atan2(d2, d3) * 180.0D / 3.1415927410125732D));
+        float f2 = (float) (TrigMath.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - 90.0F; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
+        float f3 = (float) (-(TrigMath.atan2(d2, d3) * 180.0D / 3.1415927410125732D)); // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
 
         this.pitch = -this.b(this.pitch, f3, f1);
         this.yaw = this.b(this.yaw, f2, f);

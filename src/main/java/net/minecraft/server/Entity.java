@@ -414,6 +414,10 @@ public abstract class Entity {
                     }
                 }
             }
+            
+            double d9;
+            double d10;
+            int k;
 
             List list = this.world.a(this, this.boundingBox.a(d0, d1, d2));
 
@@ -453,10 +457,6 @@ public abstract class Entity {
                 d1 = 0.0D;
                 d0 = 0.0D;
             }
-
-            double d9;
-            double d10;
-            int k;
 
             if (this.bP > 0.0F && flag1 && (flag || this.bO < 0.05F) && (d5 != d0 || d7 != d2)) {
                 d9 = d0;

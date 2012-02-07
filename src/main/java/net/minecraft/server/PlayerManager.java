@@ -16,7 +16,7 @@ public class PlayerManager {
     public PlayerManager(MinecraftServer minecraftserver, int i, int j) {
         if (j > 15) {
             throw new IllegalArgumentException("Too big view radius!");
-        } else if (j < 3) {
+        } else if (j < 1) { //CraftBukkitPlusPlus 3->1
             throw new IllegalArgumentException("Too small view radius!");
         } else {
             this.f = j;
@@ -180,7 +180,7 @@ public class PlayerManager {
     }
 
     public int getFurthestViewableBlock() {
-        return this.f * 16 - 16;
+        return Math.max(16, this.f * 16 - 16); //CraftBukkitPlusPlus
     }
 
     static LongHashMap a(PlayerManager playermanager) {

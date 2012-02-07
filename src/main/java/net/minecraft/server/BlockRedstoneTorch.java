@@ -1,7 +1,10 @@
 package net.minecraft.server;
 
-import java.util.ArrayList;
-import java.util.List;
+import gnu.trove.list.linked.TLongLinkedList;
+import gnu.trove.map.hash.TLongObjectHashMap;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
@@ -9,32 +12,61 @@ import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
 public class BlockRedstoneTorch extends BlockTorch {
 
     private boolean isOn = false;
-    private static List b = new ArrayList();
+    private static Map<World, TLongObjectHashMap<TLongLinkedList>> torchUpdates = new HashMap<World, TLongObjectHashMap<TLongLinkedList>>(); //  CraftBukkitPlusPlus
 
     public int a(int i, int j) {
         return i == 1 ? Block.REDSTONE_WIRE.a(i, j) : super.a(i, j);
     }
 
-    private boolean a(World world, int i, int j, int k, boolean flag) {
-        if (flag) {
-            b.add(new RedstoneUpdateInfo(i, j, k, world.getTime()));
+    // CraftBukkitPlusPlus start
+    protected static final long key(int x, int y, int z) {
+        return (((long)x) & 0x1FFFFF) << 42 | (((long)z) & 0x1FFFFF) << 21 | ((long)y) & 0x1FFFFF;
+    }
+    
+    protected static TLongObjectHashMap<TLongLinkedList> getTorchUpdates(World world) {
+    	TLongObjectHashMap<TLongLinkedList> updates = torchUpdates.get(world);
+    	if (updates == null) {
+    		updates = new TLongObjectHashMap<TLongLinkedList>();
+    		torchUpdates.put(world, updates);
+    	}
+    	return updates;
+    }
+    
+    private boolean a(World world, int x, int y, int z, boolean flag) {
+        long key = key(x, y, z);
+        TLongLinkedList currentTorchUpdates;
+        TLongObjectHashMap<TLongLinkedList> worldTorchUpdates = getTorchUpdates(world);
+        if (worldTorchUpdates.containsKey(key)) {
+            currentTorchUpdates = worldTorchUpdates.get(key);
+        } else {
+            currentTorchUpdates = new TLongLinkedList();
+            worldTorchUpdates.put(key, currentTorchUpdates);
         }
 
-        int l = 0;
+        if (flag) {
+            currentTorchUpdates.add(world.getTime());
+        }
 
-        for (int i1 = 0; i1 < b.size(); ++i1) {
-            RedstoneUpdateInfo redstoneupdateinfo = (RedstoneUpdateInfo) b.get(i1);
+        return currentTorchUpdates.size() > 8;
+    }
 
-            if (redstoneupdateinfo.a == i && redstoneupdateinfo.b == j && redstoneupdateinfo.c == k) {
-                ++l;
-                if (l >= 8) {
-                    return true;
-                }
+    private void removeOutdatedUpdates(World world, int x, int y, int z) {
+        long key = key(x, y, z);
+        TLongObjectHashMap<TLongLinkedList> worldTorchUpdates = getTorchUpdates(world);
+        if (!worldTorchUpdates.containsKey(key)) return;
+        TLongLinkedList currentTorchUpdates = worldTorchUpdates.get(key);
+
+        long minTime = world.getTime() - 100L;
+        int currentTorchUpdatesLen = currentTorchUpdates.size();
+        for(int i = 0; i < currentTorchUpdatesLen; ++i) {
+            if(currentTorchUpdates.get(i) < minTime) {
+                currentTorchUpdates.removeAt(i);
+                --i;
+                --currentTorchUpdatesLen;
             }
         }
-
-        return false;
     }
+    // CraftBukkitPlusPlus end
 
     protected BlockRedstoneTorch(int i, int j, boolean flag) {
         super(i, j);
@@ -70,6 +102,7 @@ public class BlockRedstoneTorch extends BlockTorch {
             world.applyPhysics(i, j, k - 1, this.id);
             world.applyPhysics(i, j, k + 1, this.id);
         }
+        removeOutdatedUpdates(world, i, j, k); //  CraftBukkitPlusPlus
     }
 
     public boolean a(IBlockAccess iblockaccess, int i, int j, int k, int l) {
@@ -91,9 +124,7 @@ public class BlockRedstoneTorch extends BlockTorch {
     public void a(World world, int i, int j, int k, Random random) {
         boolean flag = this.g(world, i, j, k);
 
-        while (b.size() > 0 && world.getTime() - ((RedstoneUpdateInfo) b.get(0)).d > 100L) {
-            b.remove(0);
-        }
+        removeOutdatedUpdates(world, i, j, k); //  CraftBukkitPlusPlus
 
         // CraftBukkit start
         org.bukkit.plugin.PluginManager manager = world.getServer().getPluginManager();

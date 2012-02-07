@@ -4,6 +4,7 @@ import java.util.List;
 
 // CraftBukkit start
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.TrigMath;
 import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.entity.Explosive;
 import org.bukkit.entity.Projectile;
@@ -136,9 +137,9 @@ public class EntityFireball extends Entity {
         this.locZ += this.motZ;
         float f1 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
 
-        this.yaw = (float) (Math.atan2(this.motX, this.motZ) * 180.0D / 3.1415927410125732D);
+        this.yaw = (float) (TrigMath.atan2(this.motX, this.motZ) * 180.0D / 3.1415927410125732D); // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
 
-        for (this.pitch = (float) (Math.atan2(this.motY, (double) f1) * 180.0D / 3.1415927410125732D); this.pitch - this.lastPitch < -180.0F; this.lastPitch -= 360.0F) {
+        for (this.pitch = (float) (TrigMath.atan2(this.motY, (double) f1) * 180.0D / 3.1415927410125732D); this.pitch - this.lastPitch < -180.0F; this.lastPitch -= 360.0F) { // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
             ;
         }
 

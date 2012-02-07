@@ -1,5 +1,7 @@
 package net.minecraft.server;
 
+import gnu.trove.set.hash.TLongHashSet;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -76,7 +78,7 @@ public class World implements IBlockAccess {
     private boolean S;
     public boolean allowMonsters; // CraftBukkit - private -> public
     public boolean allowAnimals; // CraftBukkit - private -> public
-    private LongHashset chunkTickList; // CraftBukkit
+    //private LongHashset chunkTickList; // CraftBukkitPlusPlus
     public long ticksPerAnimalSpawns; // CraftBukkit
     public long ticksPerMonsterSpawns; // CraftBukkit
     private int U;
@@ -149,7 +151,7 @@ public class World implements IBlockAccess {
         this.R = new ArrayList();
         this.allowMonsters = true;
         this.allowAnimals = true;
-        this.chunkTickList = new LongHashset(); // CraftBukkit
+        //this.chunkTickList = new LongHashset(); // CraftBukkitPlusPlus
         this.ticksPerAnimalSpawns = this.getServer().getTicksPerAnimalSpawns(); // CraftBukkit
         this.ticksPerMonsterSpawns = this.getServer().getTicksPerMonsterSpawns(); // CraftBukkit
         this.U = this.random.nextInt(12000);
@@ -870,8 +872,7 @@ public class World implements IBlockAccess {
 
     public boolean addEntity(Entity entity, SpawnReason spawnReason) { // Changed signature, added SpawnReason
         if (entity == null) return false;
-        // CraftBukkit end
-
+    // CraftBukkit end
         int i = MathHelper.floor(entity.locX / 16.0D);
         int j = MathHelper.floor(entity.locZ / 16.0D);
         boolean flag = false;
@@ -899,7 +900,50 @@ public class World implements IBlockAccess {
             if (event.isCancelled()) {
                 return false;
             }
+            
+            //CraftBukkitPlusPlus start
+            EntityItem item = (EntityItem)entity;
+            int maxSize = item.itemStack.getMaxStackSize();
+            if (item.itemStack.count < maxSize) {
+                double radius = this.getServer().getItemMergeRadius();
+                if (radius > 0) {
+                    List<Entity> entities = this.getEntities(entity, entity.boundingBox.grow(radius, radius, radius));
+                    for (Entity e : entities) {
+                        if (e instanceof EntityItem) {
+                            EntityItem loopItem = (EntityItem)e;
+                            if (!loopItem.dead && loopItem.itemStack.id == item.itemStack.id && loopItem.itemStack.getData() == item.itemStack.getData()) {
+                                int toAdd = Math.min(loopItem.itemStack.count, maxSize - item.itemStack.count);
+                                item.itemStack.count += toAdd;
+                                item.invulnerableTicks = 3;
+                                loopItem.itemStack.count -= toAdd;
+                                if (loopItem.itemStack.count <= 0) {
+                                    loopItem.die();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //CraftBukkitPlusPlus end
         }
+        //CraftBukkitPlusPlus start
+        else if (entity instanceof EntityExperienceOrb) {
+            EntityExperienceOrb xp = (EntityExperienceOrb)entity;
+             double radius = this.getServer().getItemMergeRadius();
+             if (radius > 0) {
+                 List<Entity> entities = this.getEntities(entity, entity.boundingBox.grow(radius, radius, radius));
+                 for (Entity e : entities) {
+                     if (e instanceof EntityExperienceOrb) {
+                         EntityExperienceOrb loopItem = (EntityExperienceOrb)e;
+                         if (!loopItem.dead) {
+                             xp.value += loopItem.value;
+                             loopItem.die();
+                         }
+                     }
+                 }
+             }
+        }
+        //CraftBukkitPlusPlus end
         // CraftBukkit end
 
         if (!flag && !this.isChunkLoaded(i, j)) {
@@ -1867,25 +1911,53 @@ public class World implements IBlockAccess {
         this.worldData.setWeatherDuration(1);
     }
 
+    //CraftBukkitPlusPlus start
+    public int optimalChunks = this.getServer().getOptimalGrowthChunks(); 
+    public int aggregateTicks = this.getServer().getAggregateChunkTicks(); 
+    
     protected void k() {
+        this.aggregateTicks--;
+        if (this.aggregateTicks != 0) return;
+        aggregateTicks = this.getServer().getAggregateChunkTicks();
+        
         // this.T.clear(); // CraftBukkit - removed
         // MethodProfiler.a("buildList"); // CraftBukkit - not in production code
 
         int i;
         int j;
-
+        
+        if (optimalChunks <= 0) return;
+        if (players.size() == 0) return;
+        TLongHashSet chunkTickList = new TLongHashSet(optimalChunks * 3);
+        //Keep chunks with growth inside of the optimal chunk range
+        int chunksPerPlayer = Math.min(200, Math.max(1, (int)(((optimalChunks - players.size()) / (double)players.size()) + 0.5)));
+        int randRange = 3 + chunksPerPlayer / 30;
+        
         for (i = 0; i < this.players.size(); ++i) {
             EntityHuman entityhuman = (EntityHuman) this.players.get(i);
-            int k = MathHelper.floor(entityhuman.locX / 16.0D);
-            int l = MathHelper.floor(entityhuman.locZ / 16.0D);
-            byte b0 = 7;
+            int chunkX = MathHelper.floor(entityhuman.locX / 16.0D);
+            int chunkZ = MathHelper.floor(entityhuman.locZ / 16.0D);
+            
+            //Always update the chunk the player is on
+            chunkTickList.add(LongHash.toLong(chunkX, chunkZ));
 
-            for (j = -b0; j <= b0; ++j) {
-                for (int i1 = -b0; i1 <= b0; ++i1) {
-                    this.chunkTickList.add(LongHash.toLong(j + k, i1 + l)); // CraftBukkit
+            //Check and see if we update the chunks surrounding the player this tick
+            for (int chunk = 0; chunk < chunksPerPlayer; chunk++) {
+                int attempts = 0;
+                while (true) {
+                    int dx = random.nextInt(randRange);
+                    int dz = random.nextInt(randRange);
+                    long hash = LongHash.toLong(dx + chunkX, dz + chunkZ);
+                    if (!chunkTickList.contains(hash)) {
+                        chunkTickList.add(hash);
+                        break;
+                    }
+                    attempts++;
+                    if (attempts > 5) break;
                 }
             }
         }
+        //CraftBukkitPlusPlus End
 
         if (this.U > 0) {
             --this.U;
@@ -1898,7 +1970,7 @@ public class World implements IBlockAccess {
         // Iterator iterator = this.T.iterator(); // CraftBukkit - removed
 
         // CraftBukkit start
-        for (long chunkCoord : this.chunkTickList.popAll()) {
+        for (long chunkCoord : chunkTickList._set) {
             int chunkX = LongHash.msw(chunkCoord);
             int chunkZ = LongHash.lsw(chunkCoord);
             // ChunkCoordIntPair chunkcoordintpair = (ChunkCoordIntPair) iterator.next();
@@ -1908,7 +1980,10 @@ public class World implements IBlockAccess {
             // MethodProfiler.a("getChunk"); // CraftBukkit - not in production code
             Chunk chunk = this.getChunkAt(chunkX, chunkZ);
             // CraftBukkit end
-
+            
+            final int totalTicks = this.getServer().getAggregateChunkTicks();
+            for (int ticks = totalTicks; ticks > 0 ; ticks--) { // CraftBukkitPlusPlus
+            
             // MethodProfiler.b("tickChunk"); // CraftBukkit - not in production code
             chunk.i();
             // MethodProfiler.b("moodSound"); // CraftBukkit - not in production code
@@ -1938,7 +2013,7 @@ public class World implements IBlockAccess {
             }
 
             // MethodProfiler.b("thunder"); // CraftBukkit - not in production code
-            if (this.random.nextInt(100000) == 0 && this.w() && this.v()) {
+            if (ticks == 1 && this.random.nextInt(50000 / totalTicks) == 0 && this.w() && this.v()) { //CraftBukkitPlusPlus 100000 -> 50000
                 this.l = this.l * 3 + 1013904223;
                 l1 = this.l >> 2;
                 i2 = k1 + (l1 & 15);
@@ -1951,7 +2026,7 @@ public class World implements IBlockAccess {
             }
 
             // MethodProfiler.b("iceandsnow"); // CraftBukkit - not in production code
-            if (this.random.nextInt(16) == 0) {
+            if (this.random.nextInt(4) == 0) { //CraftBukkitPlusPlus 16 -> 4
                 this.l = this.l * 3 + 1013904223;
                 l1 = this.l >> 2;
                 i2 = l1 & 15;
@@ -1985,10 +2060,14 @@ public class World implements IBlockAccess {
             }
 
             // MethodProfiler.b("checkLight"); // CraftBukkit - not in production code
+            if (getServer().isRandomLightingUpdates())//CraftBukkitPlusPlus
             this.s(k1 + this.random.nextInt(16), this.random.nextInt(this.height), j + this.random.nextInt(16));
             // MethodProfiler.b("tickTiles"); // CraftBukkit - not in production code
 
-            for (l1 = 0; l1 < 20; ++l1) {
+            //CraftBukkitPlusPlus start
+            int tickedTiles = 0;
+            int attempts = 0;
+            while (true) {
                 this.l = this.l * 3 + 1013904223;
                 i2 = this.l >> 2;
                 j2 = i2 & 15;
@@ -1998,11 +2077,16 @@ public class World implements IBlockAccess {
 
                 ++j1;
                 if (Block.n[i3]) {
-                    ++i;
+                    tickedTiles++;
                     Block.byId[i3].a(this, j2 + k1, l2, k2 + j, this.random);
                 }
+                attempts++;
+                if (tickedTiles > 2 || attempts > 20) break;
             }
+           
 
+            }
+            //CraftBukkitPlusPlus End
             // MethodProfiler.a(); // CraftBukkit - not in production code
         }
     }
@@ -2313,7 +2397,7 @@ public class World implements IBlockAccess {
         } else {
             if (i > 1000) {
                 // CraftBukkit start - if the server has too much to process over time, try to alleviate that
-                if (i > 20 * 1000) {
+                if(i > 20 * 1000) {
                     i = i / 20;
                 } else {
                     i = 1000;
@@ -2494,8 +2578,8 @@ public class World implements IBlockAccess {
         int l1 = i + l;
         int i2 = j + l;
         int j2 = k + l;
-        ChunkCache chunkcache = new ChunkCache(this, i1, j1, k1, l1, i2, j2);
-        PathEntity pathentity = (new Pathfinder(chunkcache)).a(entity, entity1, f);
+        //ChunkCache chunkcache = new ChunkCache(this, i1, j1, k1, l1, i2, j2); //CraftBukkitPlusPlus
+        PathEntity pathentity = (new Pathfinder(this)).a(entity, entity1, f); //CraftBukkitPlusPlus
 
         // MethodProfiler.a(); // CraftBukkit - not in production code
         return pathentity;
@@ -2513,8 +2597,8 @@ public class World implements IBlockAccess {
         int k2 = l + k1;
         int l2 = i1 + k1;
         int i3 = j1 + k1;
-        ChunkCache chunkcache = new ChunkCache(this, l1, i2, j2, k2, l2, i3);
-        PathEntity pathentity = (new Pathfinder(chunkcache)).a(entity, i, j, k, f);
+        //ChunkCache chunkcache = new ChunkCache(this, l1, i2, j2, k2, l2, i3); //CraftBukkitPlusPlus
+        PathEntity pathentity = (new Pathfinder(this)).a(entity, i, j, k, f); //CraftBukkitPlusPlus
 
         // MethodProfiler.a(); // CraftBukkit - not in production code
         return pathentity;

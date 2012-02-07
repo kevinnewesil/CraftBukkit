@@ -3,6 +3,7 @@ package net.minecraft.server;
 import java.util.List;
 // CraftBukkit start
 import org.bukkit.block.BlockState;
+import org.bukkit.craftbukkit.TrigMath;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.event.block.EntityBlockFormEvent;
 // CraftBukkit end
@@ -74,7 +75,7 @@ public class EntitySnowman extends EntityGolem {
                 this.attackTicks = 10;
             }
 
-            this.yaw = (float) (Math.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - 90.0F;
+            this.yaw = (float) (TrigMath.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - 90.0F; // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
             this.e = true;
         }
     }

@@ -4,6 +4,7 @@ import java.util.List;
 
 // CraftBukkit start
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.TrigMath;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
@@ -332,7 +333,7 @@ public class EntityBoat extends Entity {
             d10 = this.lastX - this.locX;
             d11 = this.lastZ - this.locZ;
             if (d10 * d10 + d11 * d11 > 0.0010D) {
-                d5 = (double) ((float) (Math.atan2(d11, d10) * 180.0D / 3.141592653589793D));
+                d5 = (double) ((float) (TrigMath.atan2(d11, d10) * 180.0D / 3.141592653589793D)); // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
             }
 
             double d12;

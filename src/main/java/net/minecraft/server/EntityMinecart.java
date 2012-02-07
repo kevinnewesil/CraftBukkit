@@ -4,6 +4,7 @@ import java.util.List;
 
 // CraftBukkit start
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.TrigMath;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.vehicle.VehicleCreateEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
@@ -531,7 +532,7 @@ public class EntityMinecart extends Entity implements IInventory {
             double d24 = this.lastZ - this.locZ;
 
             if (d23 * d23 + d24 * d24 > 0.0010D) {
-                this.yaw = (float) (Math.atan2(d24, d23) * 180.0D / 3.141592653589793D);
+                this.yaw = (float) (TrigMath.atan2(d24, d23) * 180.0D / 3.141592653589793D); // CraftBukkit - Use TrigMath.atan2 instead of Math.atan2
                 if (this.f) {
                     this.yaw += 180.0F;
                 }

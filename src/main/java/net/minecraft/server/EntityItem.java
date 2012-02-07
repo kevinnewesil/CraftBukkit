@@ -14,6 +14,7 @@ public class EntityItem extends Entity {
     private int f = 5;
     public float d = (float) (Math.random() * 3.141592653589793D * 2.0D);
     private int lastTick = (int) (System.currentTimeMillis() / 50); // CraftBukkit
+    public int invulnerableTicks = 0; //CraftBukkitPlusPlus
 
     public EntityItem(World world, double d0, double d1, double d2, ItemStack itemstack) {
         super(world);
@@ -54,6 +55,8 @@ public class EntityItem extends Entity {
         this.pickupDelay -= (currentTick - this.lastTick);
         this.lastTick = currentTick;
         // CraftBukkit end
+        
+        if (invulnerableTicks > 0) invulnerableTicks--;//CraftBukkitPlusPlus
 
         this.lastX = this.locX;
         this.lastY = this.locY;
@@ -109,6 +112,7 @@ public class EntityItem extends Entity {
 
     public boolean damageEntity(DamageSource damagesource, int i) {
         this.aM();
+        if (invulnerableTicks > 0) return false;//CraftBukkitPlusPlus
         this.f -= i;
         if (this.f <= 0) {
             this.die();
