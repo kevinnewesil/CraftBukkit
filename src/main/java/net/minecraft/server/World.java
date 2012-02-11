@@ -2397,7 +2397,7 @@ public class World implements IBlockAccess {
         } else {
             if (i > 1000) {
                 // CraftBukkit start - if the server has too much to process over time, try to alleviate that
-                if(i > 20 * 1000) {
+                if (i > 20 * 1000) {
                     i = i / 20;
                 } else {
                     i = 1000;

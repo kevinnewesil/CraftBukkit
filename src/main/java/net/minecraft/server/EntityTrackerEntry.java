@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import gnu.trove.set.hash.TIntHashSet;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,7 +28,6 @@ public class EntityTrackerEntry {
     private int t = 0;
     public boolean m = false;
     public Set trackedPlayers = new HashSet();
-    public TIntHashSet trackedIds = new TIntHashSet(); //CraftBukkitPlusPlus
 
     public EntityTrackerEntry(Entity entity, int i, int j, boolean flag) {
         this.tracker = entity;
@@ -197,10 +195,9 @@ public class EntityTrackerEntry {
     }
 
     public void a(EntityPlayer entityplayer) {
-    	//CraftBukkitPlusPlus start
-        this.trackedPlayers.remove(entityplayer);
-        trackedIds.remove(entityplayer.id);
-        //CraftBukkitPlusPlus end
+        if (this.trackedPlayers.contains(entityplayer)) {
+            this.trackedPlayers.remove(entityplayer);
+        }
     }
 
     public void b(EntityPlayer entityplayer) {
@@ -209,9 +206,16 @@ public class EntityTrackerEntry {
             double d1 = entityplayer.locZ - (double) (this.f / 32);
 
             if (d0 >= (double) (-this.b) && d0 <= (double) this.b && d1 >= (double) (-this.b) && d1 <= (double) this.b) {
-                if (!this.trackedIds.contains(entityplayer.id)) { //CraftBukkitPlusPlus
+                if (!this.trackedPlayers.contains(entityplayer)) {
+                    // CraftBukkit start
+                    if (tracker instanceof EntityPlayer) {
+                        org.bukkit.entity.Player player = ((EntityPlayer) tracker).getBukkitEntity();
+                        if (!entityplayer.getBukkitEntity().canSee(player)) {
+                            return;
+                        }
+                    }
+                    // CraftBukkit end
                     this.trackedPlayers.add(entityplayer);
-                    trackedIds.add(entityplayer.id); //CraftBukkitPlusPlus
                     entityplayer.netServerHandler.sendPacket(this.b());
                     if (this.isMoving) {
                         entityplayer.netServerHandler.sendPacket(new Packet28EntityVelocity(this.tracker.id, this.tracker.motX, this.tracker.motY, this.tracker.motZ));
@@ -244,9 +248,8 @@ public class EntityTrackerEntry {
                         }
                     }
                 }
-            } else if (this.trackedIds.contains(entityplayer.id)) { //CraftBukkitPlusPlus
+            } else if (this.trackedPlayers.contains(entityplayer)) {
                 this.trackedPlayers.remove(entityplayer);
-                trackedIds.remove(entityplayer.id);
                 entityplayer.netServerHandler.sendPacket(new Packet29DestroyEntity(this.tracker.id));
             }
         }
