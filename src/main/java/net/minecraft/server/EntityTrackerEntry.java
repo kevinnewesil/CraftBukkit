@@ -87,6 +87,12 @@ public class EntityTrackerEntry {
             }
             // CraftBukkit end
 
+            //CraftBukkitPlusPlus start
+            if (tracker.vehicle != null && !(tracker instanceof EntityPlayer)) {
+                // For mobs in vehicles, pretend they aren't moveing, apart from teleports.
+                flag = false;
+            }
+            //CraftBukkitPlusPlus end
             if (j1 >= -128 && j1 < 128 && k1 >= -128 && k1 < 128 && l1 >= -128 && l1 < 128 && this.t <= 400) {
                 if (flag && flag1) {
                     object = new Packet33RelEntityMoveLook(this.tracker.id, (byte) j1, (byte) k1, (byte) l1, (byte) l, (byte) i1);
