@@ -2,6 +2,7 @@ package net.minecraft.server;
 
 // CraftBukkit start
 import org.bukkit.craftbukkit.entity.CraftEntity;
+import org.bukkit.entity.Creeper;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.CreeperPowerEvent;
 // CraftBukkit end
@@ -152,7 +153,7 @@ public class EntityCreeper extends EntityMonster {
         super.a(entityweatherlighting);
 
         // CraftBukkit start
-        CreeperPowerEvent event = new CreeperPowerEvent(this.getBukkitEntity(), entityweatherlighting.getBukkitEntity(), CreeperPowerEvent.PowerCause.LIGHTNING);
+        CreeperPowerEvent event = new CreeperPowerEvent((Creeper) this.getBukkitEntity(), entityweatherlighting.getBukkitEntity(), CreeperPowerEvent.PowerCause.LIGHTNING);
         this.world.getServer().getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {

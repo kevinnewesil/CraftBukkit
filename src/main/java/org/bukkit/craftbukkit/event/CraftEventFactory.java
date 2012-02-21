@@ -231,7 +231,7 @@ public class CraftEventFactory {
      * CreatureSpawnEvent
      */
     public static CreatureSpawnEvent callCreatureSpawnEvent(EntityLiving entityliving, SpawnReason spawnReason) {
-        org.bukkit.entity.Entity entity = entityliving.getBukkitEntity();
+        LivingEntity entity = (LivingEntity) entityliving.getBukkitEntity();
         CraftServer craftServer = (CraftServer) entity.getServer();
 
         CreatureType type = null;
@@ -303,7 +303,7 @@ public class CraftEventFactory {
      * ItemSpawnEvent
      */
     public static ItemSpawnEvent callItemSpawnEvent(EntityItem entityitem) {
-        org.bukkit.entity.Entity entity = entityitem.getBukkitEntity();
+        org.bukkit.entity.Item entity = (org.bukkit.entity.Item) entityitem.getBukkitEntity();
         CraftServer craftServer = (CraftServer) entity.getServer();
 
         ItemSpawnEvent event = new ItemSpawnEvent(entity, entity.getLocation());
@@ -316,7 +316,7 @@ public class CraftEventFactory {
      * ItemDespawnEvent
      */
     public static ItemDespawnEvent callItemDespawnEvent(EntityItem entityitem) {
-        org.bukkit.entity.Entity entity = entityitem.getBukkitEntity();
+        org.bukkit.entity.Item entity = (org.bukkit.entity.Item) entityitem.getBukkitEntity();
 
         ItemDespawnEvent event = new ItemDespawnEvent(entity, entity.getLocation());
 

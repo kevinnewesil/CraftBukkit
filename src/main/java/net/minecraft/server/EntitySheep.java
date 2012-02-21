@@ -5,6 +5,7 @@ import java.util.Random;
 // CraftBukkit start
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
+import org.bukkit.entity.Sheep;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 // CraftBukkit end
 
@@ -110,7 +111,7 @@ public class EntitySheep extends EntityAnimal {
             if (flag) {
                // CraftBukkit start
                 if (!this.isBaby()) {
-                    org.bukkit.event.entity.SheepRegrowWoolEvent event = new org.bukkit.event.entity.SheepRegrowWoolEvent(this.getBukkitEntity());
+                    org.bukkit.event.entity.SheepRegrowWoolEvent event = new org.bukkit.event.entity.SheepRegrowWoolEvent((Sheep) this.getBukkitEntity());
                     this.world.getServer().getPluginManager().callEvent(event);
 
                     if (!event.isCancelled()) {

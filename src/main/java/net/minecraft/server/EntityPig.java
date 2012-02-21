@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 // CraftBukkit start
+import org.bukkit.entity.Pig;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.PigZapEvent;
 // CraftBukkit end
@@ -76,7 +77,7 @@ public class EntityPig extends EntityAnimal {
             EntityPigZombie entitypigzombie = new EntityPigZombie(this.world);
 
             // CraftBukkit start
-            PigZapEvent event = new PigZapEvent(this.getBukkitEntity(), entityweatherlighting.getBukkitEntity(), entitypigzombie.getBukkitEntity());
+            PigZapEvent event = new PigZapEvent((Pig) this.getBukkitEntity(), entityweatherlighting.getBukkitEntity(), entitypigzombie.getBukkitEntity());
             this.world.getServer().getPluginManager().callEvent(event);
 
             if (event.isCancelled()) {
