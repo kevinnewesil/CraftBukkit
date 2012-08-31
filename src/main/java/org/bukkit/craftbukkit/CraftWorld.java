@@ -1164,12 +1164,18 @@ public class CraftWorld implements World {
     }
 
     public void playSound(Location loc, Sound sound, float volume, float pitch) {
+        if (sound == null) return;
+
+        playSound(loc, sound.getSound(), volume, pitch);
+    }
+
+    public void playSound(Location loc, String sound, float volume, float pitch) {
         if (loc == null || sound == null) return;
 
         double x = loc.getX();
         double y = loc.getY();
         double z = loc.getZ();
 
-        getHandle().makeSound(x, y, z, sound.getSound(), volume, pitch);
+        getHandle().makeSound(x, y, z, sound, volume, pitch);
     }
 }
